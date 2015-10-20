@@ -106,9 +106,7 @@ class Stream():
 
 
   def meta(self):
-    url = self._config["urls"]["meta"]
-    metaObj = fetchJsonData(url, debug=self._debug)
-    return metaObj["metadata"]
+    return self._config["meta"]
 
 
   def get(self, key):
@@ -134,7 +132,7 @@ class Stream():
     if aggregate is not None:
       params["aggregate"] = aggregate
 
-    dataObj = fetchJsonData(url, params=params)
+    dataObj = fetchJsonData(url, params=params, debug=self._debug)
     return DataCursor(self, dataObj, self._debug)
 
   def __str__(self):
@@ -157,14 +155,17 @@ class River():
 
   def _populateStreams(self):
     url = self._config["urls"]["keys"]
-    streamsObject = fetchJsonData(url, debug=self._debug)
+    params = {"includeDetails": True}
+    streamsObject = fetchJsonData(url, params=params, debug=self._debug)
     streams = []
-    streamNames = streamsObject["keys"]
+    meta = streamsObject["keys"]
     urls = streamsObject["urls"]["streams"]
-    for streamName in streamNames:
+    for streamName in meta.keys():
+      metadata = meta[streamName]
       streams.append(Stream(self, dict({
         "name": streamName,
-        "urls": urls[streamName]
+        "urls": urls[streamName],
+        "meta": metadata
       }), debug=self._debug))
     self._streams = streams
 
