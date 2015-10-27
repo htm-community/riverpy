@@ -88,9 +88,15 @@ class DataCursor():
   def __str__(self):
     meta = self.get("meta")
     dataCount = len(self.data())
-    dataDescription = "(%i data points / %s)" % (dataCount, meta["duration"])
-    since = meta["since"]["timestring"] 
-    until = meta["until"]["timestring"]
+    duration = 'unknown'
+    since = 'unknown'
+    until = 'unknown'
+    if "duration" in meta:
+      duration = meta["duration"]
+    dataDescription = "(%i data points / %s)" % (dataCount, duration)
+    if "since" in meta:
+      since = meta["since"]["timestring"] 
+      until = meta["until"]["timestring"]
     
     return "%s [%s ==> %s] %s" % (self._stream, since, until, dataDescription)
 

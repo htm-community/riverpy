@@ -33,12 +33,24 @@ def kwargsToString(**kwargs):
   return "[%s]" % (", ".join(out))
 
 
+# url = "http://localhost:8085/"
+url = None
+client = RiverViewClient(url=url, debug=True)
+
+
+
+r = client.river("mn-traffic-sensors")
+for stream in r.streams():
+  print stream.meta()
+
+
+
+
+
 class RiverViewHarness(object):
-  
   
   def __init__(self, client):
     self._client = client
-
 
   def run(self, river, stream, fn, **kwargs):
     print "Running harness (%s %s): %s %s" \
@@ -46,16 +58,7 @@ class RiverViewHarness(object):
     fn(client.river(river).stream(stream), **kwargs)
 
 
-
-url = "http://localhost:8085/"
-
-client = RiverViewClient(url=url, debug=False)
 harness = RiverViewHarness(client)
-
-oneDayAgo = date.today() - timedelta(days=1)
-oneWeekAgo = date.today() - timedelta(days=7)
-oneMonthAgo = date.today() - timedelta(days=28)
-oneYearAgo = date.today() - timedelta(days=365)
 
 
 def chronological_paging(stream, since=None, **kwargs):
@@ -84,11 +87,18 @@ def reverse_chronological_paging(stream, **kwargs):
     print data
 
 
+
+
+oneDayAgo = date.today() - timedelta(days=1)
+oneWeekAgo = date.today() - timedelta(days=7)
+oneMonthAgo = date.today() - timedelta(days=28)
+oneYearAgo = date.today() - timedelta(days=365)
+
 # harness.run("mn-traffic-sensors", "T4024", chronological_paging, limit=500)
 # harness.run("mn-traffic-sensors", "T4024", reverse_chronological_paging, limit=500)
 
 # harness.run("portland-911", "portland-911", chronological_paging, since=oneWeekAgo, limit=50)
 # harness.run("portland-911", "portland-911", reverse_chronological_paging)
 
-harness.run("portland-911", "portland-911", chronological_paging, since=oneYearAgo, aggregate="15 minutes")
+# harness.run("portland-911", "portland-911", chronological_paging, since=oneYearAgo, aggregate="15 minutes")
 
